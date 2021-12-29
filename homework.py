@@ -77,7 +77,7 @@ class Running(Training):
         duration_min: float = self.duration * self.MIN_IN_HOUR
         calc_speed_coef: float = self.COEF_CALORIE_1 * self.get_mean_speed()
         calc_avg_speed: float = (
-                    calc_speed_coef - self.COEF_CALORIE_2) * self.weight
+            calc_speed_coef - self.COEF_CALORIE_2) * self.weight
         spent_calories: float = calc_avg_speed / self.M_IN_KM * duration_min
         return spent_calories
 
