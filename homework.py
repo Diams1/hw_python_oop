@@ -1,3 +1,4 @@
+from typing import Dict, Type
 from dataclasses import asdict, dataclass
 
 
@@ -142,7 +143,7 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list[float]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    traning_types: dict[str, [Training]] = {
+    traning_types: Dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
@@ -152,7 +153,7 @@ def read_package(workout_type: str, data: list[float]) -> Training:
     return traning_types[workout_type](*data)
 
 
-def main(training: Training) -> None:
+def main(training: Type[Training]) -> None:
     """Главная функция."""
     info = training.show_training_info()
     print(info.get_message())
