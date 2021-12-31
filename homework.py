@@ -1,5 +1,5 @@
-from typing import Dict, List, Type
 from dataclasses import asdict, dataclass
+from typing import Dict, List, Type
 
 
 @dataclass
@@ -10,7 +10,7 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    string_ru: str = (
+    TEXT_RU: str = (
         'Тип тренировки: {training_type}; '
         'Длительность: {duration:.3f} ч.; '
         'Дистанция: {distance:.3f} км; '
@@ -19,14 +19,12 @@ class InfoMessage:
 
     def get_message(self) -> str:
         """Вывод сообщения о тренировке"""
-        message: str = self.string_ru.format(**asdict(self))
+        message: str = self.TEXT_RU.format(**asdict(self))
         return message
 
 
 class Training:
     """Базовый класс тренировки."""
-    COEF_CCAL_1: int = 18
-    COEF_CCAL_2: int = 20
     MIN_IN_HOUR: int = 60
     M_IN_KM: int = 1000
     LEN_STEP: float = 0.65
@@ -55,7 +53,7 @@ class Training:
         """Получить количество затраченных калорий."""
         raise NotImplementedError(
             f'В классе {self.__class__.__name__} '
-            'не определён метод <get_spent_calories>!')
+            'не определен вызываемый метод')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -70,24 +68,23 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    COEF_CALORIE_1: int = 18
-    COEF_CALORIE_2: int = 20
+    COEF_RUN_1: int = 18
+    COEF_RUN_2: int = 20
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         duration_min: float = self.duration * self.MIN_IN_HOUR
-        calc_speed_coef: float = self.COEF_CALORIE_1 * self.get_mean_speed()
+        calc_speed_coef: float = self.COEF_RUN_1 * self.get_mean_speed()
         calc_avg_speed: float = (
-            calc_speed_coef - self.COEF_CALORIE_2) * self.weight
+            calc_speed_coef - self.COEF_RUN_2) * self.weight
         spent_calories: float = calc_avg_speed / self.M_IN_KM * duration_min
         return spent_calories
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    COEFF_CALORIE_1: float = 0.035
-    COEFF_CALORIE_2: float = 0.029
-    COEFF_SQUARE: int = 2
+    COEFF_WLK_1: float = 0.035
+    COEFF_WLK_2: float = 0.029
 
     def __init__(self,
                  action: int,
@@ -101,9 +98,9 @@ class SportsWalking(Training):
         """Получить количество затраченных калорий."""
         duration_min: float = self.duration * self.MIN_IN_HOUR
         calc_formula: float = (
-            self.get_mean_speed() ** self.COEFF_SQUARE // self.height)
-        calc_weight_coef1: float = self.COEFF_CALORIE_1 * self.weight
-        calc_weight_coef2: float = self.COEFF_CALORIE_2 * self.weight
+            self.get_mean_speed() ** 2 // self.height)
+        calc_weight_coef1: float = self.COEFF_WLK_1 * self.weight
+        calc_weight_coef2: float = self.COEFF_WLK_2 * self.weight
         spent_calories: float = (
             (calc_weight_coef1 + calc_formula
              * calc_weight_coef2) * duration_min)
@@ -149,7 +146,8 @@ def read_package(workout_type: str, data: List[float]) -> Training:
         'WLK': SportsWalking
     }
     if workout_type not in traning_types:
-        raise ValueError(f'{workout_type} - неизвестный тип тренировки.')
+        raise ValueError(f'{workout_type} - неизвестный тип тренировки. '
+                         f'Доступные типы: SWM, RUN, WLK')
     return traning_types[workout_type](*data)
 
 
